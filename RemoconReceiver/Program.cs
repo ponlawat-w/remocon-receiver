@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using WebSocketSharp;
 using AudioSwitcher.AudioApi.CoreAudio;
 
@@ -11,6 +12,15 @@ namespace RemoconReceiver
     class Program
     {
         static string Pin = "";
+
+        const int KEYEVENTF_EXTENDEDKEY = 1;
+        const int KEYEVENTF_KEYUP = 2;
+        const int VK_MEDIA_NEXT_TRACK = 0xB0;
+        const int VK_MEDIA_PLAY_PAUSE = 0xB3;
+        const int VK_MEDIA_PREV_TRACK = 0xB1;
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, IntPtr extraInfo);
 
         static void Main(string[] args)
         {
@@ -38,7 +48,7 @@ namespace RemoconReceiver
                 string[] data = e.Data.Split('\n');
                 if (data.Length != 2)
                 {
-                    ws.Send("Incorrect format!");
+                    ws.Send("UNVALID");
                     return;
                 }
 
@@ -47,7 +57,7 @@ namespace RemoconReceiver
 
                 if (senderPin != Pin)
                 {
-                    ws.Send("Incorrect pin!");
+                    ws.Send("UNAUTHORIZED");
                     return;
                 }
 
@@ -61,6 +71,12 @@ namespace RemoconReceiver
                         audioDevice.Volume -= 2; break;
                     case "MUTE":
                         audioDevice.ToggleMute(); break;
+                    case "PREVIOUS":
+                        keybd_event(VK_MEDIA_PREV_TRACK, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero); break;
+                    case "PAUSE":
+                        keybd_event(VK_MEDIA_PLAY_PAUSE, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero); break;
+                    case "NEXT":
+                        keybd_event(VK_MEDIA_NEXT_TRACK, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero); break;
                 }
 
                 Console.Write("> ");
@@ -92,7 +108,12 @@ namespace RemoconReceiver
 
                     Console.WriteLine("New PIN: {0}", Pin);
                 }
-                else
+                else if (cliCommand == "reconfig")
+                {
+                    System.IO.File.Delete("remocon.conf");
+                    config = Init.GetConfig();
+                }
+                else if (cliCommand != "exit")
                 {
                     Console.WriteLine("Unvalid command");
                 }
