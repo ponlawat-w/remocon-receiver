@@ -18,9 +18,6 @@ namespace RemoconReceiver
                 Console.Write("Host: ");
                 defaultConfig.HostName = Console.ReadLine();
 
-                Console.Write("Port: ");
-                defaultConfig.Port = Convert.ToInt32(Console.ReadLine());
-
                 Console.Write("Pin length: ");
                 defaultConfig.PinLength = Convert.ToInt32(Console.ReadLine());
 

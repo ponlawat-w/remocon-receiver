@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using WebSocketSharp;
 using AudioSwitcher.AudioApi.CoreAudio;
@@ -36,7 +32,7 @@ namespace RemoconReceiver
             Console.WriteLine("Connecting audio device...");
             CoreAudioDevice audioDevice = (new CoreAudioController()).DefaultPlaybackDevice;
 
-            WebSocket ws = new WebSocket(String.Format("wss://{0}:{1}/receiver", config.HostName, config.Port));
+            WebSocket ws = new WebSocket(config.HostName);
             
             ws.OnOpen += (sender, e) =>
             {

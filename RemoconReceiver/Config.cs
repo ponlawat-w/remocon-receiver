@@ -10,7 +10,6 @@ namespace RemoconReceiver
     class Config
     {
         public string HostName;
-        public int Port;
         public int PinLength;
 
         public Config()
@@ -20,7 +19,7 @@ namespace RemoconReceiver
         public void Save()
         {
             StreamWriter writer = new StreamWriter("remocon.conf");
-            string text = String.Format("host={0}\nport={1}\npin_length={2}", this.HostName, this.Port.ToString(), this.PinLength.ToString());
+            string text = String.Format("host={0}\npin_length={1}", this.HostName, this.PinLength.ToString());
             writer.Write(text);
             writer.Close();
         }
@@ -39,8 +38,6 @@ namespace RemoconReceiver
                 {
                     case "host":
                         conf.HostName = value; break;
-                    case "port":
-                        conf.Port = Convert.ToInt32(value); break;
                     case "pin_length":
                         conf.PinLength = Convert.ToInt32(value); break;
                 }
